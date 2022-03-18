@@ -84,6 +84,6 @@ runs:
       aqua_report_dockerimage="roxcarpio/aqua-reports:1c75db0"
 
       docker pull $aqua_report_dockerimage
-      docker run -it -v /tmp:/reports $aqua_report_dockerimage -server ${{ inputs.server }} -user ${{ inputs.user }} -password ${{ inputs.password }} -output /reports/${{ inputs.report_filename }} $extra_args
+      docker run -d -v /tmp:/reports $aqua_report_dockerimage -server ${{ inputs.server }} -user ${{ inputs.user }} -password ${{ inputs.password }} -output /reports/${{ inputs.report_filename }} $extra_args
 
       ls -la /tmp
