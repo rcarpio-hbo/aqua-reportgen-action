@@ -43,14 +43,12 @@ runs:
       ### INITIAL CHECKS
       ### ------------------
       # Check if image and host parameters are initialized
-      # if [[ -n "${{ inputs.host }}" && -n "${{ inputs.image }}" ]]
       if [[ -n "${{ inputs.host }}" && -n "${{ inputs.image }}" ]]; then
           echo "ERROR: Host and Image Parameters are initialized. Initialize only one of them."
           exit 1
       fi
 
       # Check if image and host parameters are empty
-      # if [[ -z "${{ inputs.host }}" && -z "${{ inputs.image }}" ]]
       if [[ -z "${{ inputs.host }}" && -z "${{ inputs.image }}" ]]; then
           echo "ERROR: Host and Image Parameters are empty. Initialize one of them."
           exit 1
@@ -84,6 +82,6 @@ runs:
       aqua_report_dockerimage="roxcarpio/aqua-reports:1c75db0"
 
       docker pull $aqua_report_dockerimage
-      docker run -d -v /tmp:/reports $aqua_report_dockerimage -server ${{ inputs.server }} -user ${{ inputs.user }} -password ${{ inputs.password }} -output /reports/${{ inputs.report_filename }} $extra_args
+      docker run -v /tmp:/reports $aqua_report_dockerimage -server ${{ inputs.server }} -user ${{ inputs.user }} -password ${{ inputs.password }} -output /reports/${{ inputs.report_filename }} $extra_args
 
       ls -la /tmp
