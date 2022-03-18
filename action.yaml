@@ -1,6 +1,9 @@
 name: 'Aqua Security PDF Generator'
 description: 'Generate PDF reports for Aqua CSP image and host vulnerabilities.'
 author: 'Rosa Maria Carpio Lopez'
+branding:
+  icon: 'archive'
+  color: 'blue'
 inputs:
   server:
     description: "Aqua CSP server URL"
