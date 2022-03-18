@@ -1,0 +1,86 @@
+name: 'Aqua Security PDF Generator'
+description: 'Generate PDF reports for Aqua CSP image and host vulnerabilities.'
+author: 'Rosa Maria Carpio Lopez'
+inputs:
+  server:
+    description: "Aqua CSP server URL"
+    required: true
+  user:
+    description: "Aqua CSP Username"
+    required: true
+  password:
+    description: "Aqua CSP Password"
+    required: true
+  report_filename:
+    description: "Output filename to save PDF"
+    required: true
+    default: "report.pdf"
+  registry:
+    description: "Image Registry"
+    required: false
+  image:
+    description: "Image name to generate report for (e.g. mongo:latest)"
+    required: false
+  host:
+    description: "Host name to generate report for "
+    required: false
+  severity:
+    description: "Comma separated list of severities to export (critical, high, medium, low)"
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+  - shell: bash
+    run: |
+
+      #!/bin/bash
+
+      ### ------------------
+      ### INITIAL CHECKS
+      ### ------------------
+      # Check if image and host parameters are initialized
+      # if [[ -n "${{ inputs.host }}" && -n "${{ inputs.image }}" ]]
+      if [[ -n "${{ inputs.host }}" && -n "${{ inputs.image }}" ]]; then
+          echo "ERROR: Host and Image Parameters are initialized. Initialize only one of them."
+          exit 1
+      fi
+
+      # Check if image and host parameters are empty
+      # if [[ -z "${{ inputs.host }}" && -z "${{ inputs.image }}" ]]
+      if [[ -z "${{ inputs.host }}" && -z "${{ inputs.image }}" ]]; then
+          echo "ERROR: Host and Image Parameters are empty. Initialize one of them."
+          exit 1
+      fi
+
+      # Check if report_filename ends with .pdf
+      if [[ ${{ inputs.report_filename }} != *.pdf ]]; then
+          echo "ERROR: Report filename invalid"
+          exit 1
+      fi
+
+      ### ------------------
+      ### EXTRA DOCKER ARGS
+      ### ------------------
+
+      if [[ -n "${{ inputs.host }}" ]]; then
+          extra_args="-host ${{ inputs.host }}"
+      fi
+
+      if [[ -n "${{ inputs.image }}" ]]; then
+          extra_args="-image ${{ inputs.image }} -registry ${{ inputs.registry }}"
+      fi
+
+      if [[ -n "${{ inputs.severity }}" ]]; then
+          extra_args+=" -severity ${{ inputs.severity }}"
+      fi
+
+      ### ------------------
+      ### AQUA PDF REPORT
+      ### ------------------
+      aqua_report_dockerimage="roxcarpio/aqua-reports:1c75db0"
+
+      docker pull $aqua_report_dockerimage
+      docker run -it -v /tmp:/reports $aqua_report_dockerimage -server ${{ inputs.server }} -user ${{ inputs.user }} -password ${{ inputs.password }} -output /reports/${{ inputs.report_filename }} $extra_args
+
+      ls -la /tmp
