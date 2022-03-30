@@ -69,7 +69,7 @@ runs:
       fi
 
       if [[ -n "${{ inputs.image }}" ]]; then
-          extra_args="-image ${{ inputs.image }} -registry '${{ inputs.registry }}'"
+          extra_args="-image ${{ inputs.image }} -registry \'${{ inputs.registry }}\'"
       fi
 
       if [[ -n "${{ inputs.severity }}" ]]; then
@@ -83,4 +83,4 @@ runs:
       echo "$extra_args"
 
       docker pull $aqua_report_dockerimage
-      docker run -v /tmp:/reports $aqua_report_dockerimage -server ${{ inputs.server }} -user ${{ inputs.user }} -password ${{ inputs.password }} -output /reports/${{ inputs.report_filename }} "$extra_args"
+      sh -c "docker run -v /tmp:/reports $aqua_report_dockerimage -server ${{ inputs.server }} -user ${{ inputs.user }} -password ${{ inputs.password }} -output /reports/${{ inputs.report_filename }} $extra_args"
